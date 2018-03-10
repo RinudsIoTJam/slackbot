@@ -12,14 +12,14 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # 
-SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN')
+SLACKBOT_TOKEN = os.environ.get('SLACKBOT_TOKEN')
 try:
     from local_settings import *
 except ImportError:
     pass
 
 # instantiate Slack client
-slack_client = SlackClient(SLACK_BOT_TOKEN)
+slack_client = SlackClient(SLACKBOT_TOKEN)
 
 # starterbot's user ID in Slack: value is assigned after the bot starts up
 starterbot_id = None
