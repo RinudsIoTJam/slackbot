@@ -7,9 +7,19 @@ from time import gmtime, strftime
 
 from slackclient import SlackClient
 
+# Supress InsecurePlatformWarning
+import warnings
+warnings.filterwarnings("ignore")
+
+# 
+SLACK_BOT_TOKEN = os.environ.get('SLACK_BOT_TOKEN')
+try:
+    from local_settings import *
+except ImportError:
+    pass
 
 # instantiate Slack client
-slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+slack_client = SlackClient(SLACK_BOT_TOKEN)
 
 # starterbot's user ID in Slack: value is assigned after the bot starts up
 starterbot_id = None
@@ -82,6 +92,9 @@ def handle_channel_command(command, message, event):
     # Finds and executes the given command, filling in response
     response = None
 
+    # Default response is help text for the user
+    default_response = "Not sure what you mean. Try *{}*.".format(DIRECT_EXAMPLE_COMMAND)
+
     # This is where you start to implement more channel commands!
 
     if command.startswith(CHANNEL_COMMAND_NOTE):
@@ -133,7 +146,7 @@ def handle_direct_command(command, event):
 
     elif command.startswith(DIRECT_COMMAND_UTCTIME):
 
-        response = "<@{}> It is *{}*.".format(sender, strftime("%H:%M:%S/UTC",
+        response = "<@{}> It is *{}*.".format(event["user"], strftime("%H:%M:%S/UTC",
                     gmtime()))
 
     # Sends the response back to the channel
@@ -144,6 +157,7 @@ def handle_direct_command(command, event):
     )
 
 if __name__ == "__main__":
+
     if slack_client.rtm_connect(with_team_state=False):
         log.info("Starter Bot connected and running!")
         # Read bot's user ID by calling Web API method `auth.test`
