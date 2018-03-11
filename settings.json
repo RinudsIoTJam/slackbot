@@ -1,0 +1,8 @@
+{
+  "BOTCHANNEL_ID": "D9JU01RKQ", 
+  "BOTMASTER_SLID": "U8SJUF6KC", 
+  "SLACKBOT_TOKEN": "XXXX-325920249586-tkG2oNbZlOMrsjvkeVesRsO4",
+  "plugins": {
+    "bla": "plugins.bla"
+  }
+}

@@ -25,11 +25,13 @@ Prerequisites
 - virtualenv 
 
 ```
-git clone https://github.com/RinudsIoTJam/slackbot.git
+git clone https://github.com/RindusIoTJam/slackbot.git
 virtualenv .venv
 source .venv/bin/activate
 pip install slackclient
 ```
+
+
 
 ## Runtime
 
