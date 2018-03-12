@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+import sys
 import time
 import warnings
 
@@ -7,10 +8,10 @@ import warnings
 from slackclient import SlackClient
 
 # slackbot stuff
-from core import commands
 from core import handler
 from core import logger
 from core import settings
+from core import persistence
 
 # Supress InsecurePlatformWarning
 warnings.filterwarnings("ignore")
@@ -32,8 +33,8 @@ except ImportError:
 if os.environ.get('SLACKBOT_TOKEN') is not None:
   log.info("Using SLACKBOT_TOKEN from os.environ")
   slack_client = SlackClient(os.environ.get('SLACKBOT_TOKEN'))
-  
-elif SLACKBOT_TOKEN is not None:
+
+elif 'SLACKBOT_TOKEN' in locals() and SLACKBOT_TOKEN is not None:
   log.info("Using SLACKBOT_TOKEN from local_settings.py")
   slack_client = SlackClient(SLACKBOT_TOKEN)
   
@@ -41,11 +42,15 @@ else:
   log.info("Using SLACKBOT_TOKEN from settings.json")
   slack_client = SlackClient(config['SLACKBOT_TOKEN'])
 
+# Read bot's user ID by calling Web API method `auth.test`
+try:
+  config["SLACKBOT_ID"]  = slack_client.api_call("auth.test")["user_id"]
+except KeyError:
+  sys.exit("Not authenticated ...")
+
+config["SLACK_CLIENT"] = slack_client
 config["ROOT_LOGGER"] = log
 
-# Read bot's user ID by calling Web API method `auth.test`
-config["SLACK_CLIENT"] = slack_client
-config["SLACKBOT_ID"]  = slack_client.api_call("auth.test")["user_id"]
 log.info("Starter Bot connected and running!")
 
 # constants
@@ -66,8 +71,13 @@ else:
 
 if __name__ == "__main__":
   if slack_client.rtm_connect(with_team_state=False):
-    while True:
-      handler.handle_events(config, slack_client.rtm_read())
-      time.sleep(RTM_READ_DELAY)
+    try:
+      while True:
+        handler.handle_events(config, slack_client.rtm_read())
+        time.sleep(RTM_READ_DELAY)
+    except KeyboardInterrupt:
+      persistence.close_db()
+      sys.exit(" ... exiting")
+      
   else:
     print("Connection failed. Exception traceback printed above.")

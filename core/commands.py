@@ -1,22 +1,31 @@
 import calendar
+import datetime
 import logging
+import re
 import sys
 
 from datetime import date
-from time import localtime, strftime
 
+REGEX_CHANCMD = "^(\w+?):(.*)"
+
+from persistence import *
 
 def load(config):
   commands = {
-    "channel:cmnd:note": command_channel_note,
-    "channel:help:note": "Take a note",
+    "channel:cmnd:note":  command_channel_note,
+    "channel:help:note":  "Take a note",
+    "channel:cmnd:notes": command_channel_notes,
+    "channel:help:notes": "Show all notes",
 
-    "direct:cmnd:help":  command_direct_help,
-    "direct:help:help":  "This help",
-    "direct:cmnd:time":  command_direct_time,
-    "direct:help:time":  "The servers time",
-    "direct:cmnd:cal":   command_direct_calendar,
-    "direct:help:cal":   "Current calendar"
+    "direct:cmnd:help":   command_direct_help,
+    "direct:help:help":   "This help",
+    "direct:cmnd:time":   command_direct_time,
+    "direct:help:time":   "The servers time",
+    "direct:cmnd:cal":    command_direct_calendar,
+    "direct:help:cal":    "Current calendar"
+
+    #"direct:cmnd:test":  command_direct_test,
+    #"direct:help:test":  "test"
   }
   config["commands"] = commands
   return config
@@ -50,7 +59,7 @@ def command_direct_help(config, event):
 
 
 def command_direct_time(config, event):
-  response = "<@{}> Servers time is *{}*.".format(event["user"], strftime("%H:%M:%S/%Z", localtime()))
+  response = "<@{}> Servers datetime is *{}*.".format(event["user"], datetime.datetime.now().replace(microsecond=0).isoformat())
   return response
 
 
@@ -59,8 +68,21 @@ def command_direct_calendar(config, event):
   return response
 
 
+def command_channel_notes(config, event):
+  response = "<@{}> notes recorded till ```{}```:\n".format(event["user"], allNotes())
+  return response
+
 def command_channel_note(config, event):
-  response = "<@{}> I don't take notes for now... :grin:".format(event["user"])
+  matches = re.search(REGEX_CHANCMD, event["text"])
+
+  note = {
+    "timestamp": datetime.datetime.now().replace(microsecond=0).isoformat(),
+    "user":      event["user"],
+    "channel":   event["channel"],
+    "note":      matches.group(2).strip()
+  }
+  save(config, note)
+  response = "<@{}> note recorded at {}".format(note["user"],note["timestamp"])
   return response
 
 
@@ -77,5 +99,5 @@ def config_reload(config, **kwargs):
   return "Config reloaded"
 
 
-def log(config):
-  return config["ROOT_LOGGER"].getChild(__name__)
+#def log(config):
+#  return config["ROOT_LOGGER"].getChild(__name__)

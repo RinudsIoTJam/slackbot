@@ -5,7 +5,7 @@ def load(filename, **kwargs):
     config = json.load(settings_file)
   return config
 
-def save(filename, **kwargs):
+def save(config, filename, **kwargs):
   with open(filename, 'w') as settings_file:
     json.dump(config, settings_file, indent=2, sort_keys=False)
   return

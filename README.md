@@ -29,6 +29,7 @@ git clone https://github.com/RindusIoTJam/slackbot.git
 virtualenv .venv
 source .venv/bin/activate
 pip install slackclient
+pip install tinydb
 ```
 
 

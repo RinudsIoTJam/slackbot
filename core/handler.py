@@ -13,6 +13,9 @@ def handle_events(config, slack_events, **kwargs):
   """
   commands.load(config)
 
+  # Default response is help text for the user
+  default_response = "Not sure what you mean. Try `help`."
+
   for event in slack_events:
     response = None
 
@@ -35,7 +38,7 @@ def handle_events(config, slack_events, **kwargs):
   
       else:
         # check: A channel command was given
-        command, message = parse_channel_command(event["text"])
+        command, message = parse_channel_command(event["text"].lower())
         if command is not None:
           log(config).debug("handle_channel_command {}".format(command))
           response = handle_channel_command(config, command, message, event)
@@ -77,7 +80,6 @@ def handle_channel_command(config, command, message, event):
   response = None
 
   try:
-    matches = re.search(REGEX_COMMAND, command)
     response = config["commands"]["channel:cmnd:{}".format(command)](config, event)
   except KeyError:
     pass
@@ -88,14 +90,10 @@ def handle_direct_command(config, command, event):
   """
       Executes bot command if the command is known
   """
-  # Default response is help text for the user
-  default_response = "Not sure what you mean. Try `help`."
-
   # Finds and executes the given command, filling in response
-  response = default_response
+  response = None
 
   try:
-    matches = re.search(REGEX_COMMAND, command)
     response = config["commands"]["direct:cmnd:{}".format(command.split(' ', 1)[0])](config, event)
   except KeyError:
     pass
