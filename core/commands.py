@@ -43,15 +43,13 @@ def command_direct_help(config, event):
   channel_commands = ""
   for key in config["commands"]:
     if key.startswith("channel:cmnd:"):
-      channel_commands = "{} `{}:` : {}\n".format(channel_commands, 
-                                                  key.split(':')[2], 
+      channel_commands = "{} `{}:` : {}\n".format(channel_commands, key.split(':')[2], 
                                                   config["commands"]["channel:help:{}".format(key.split(':')[2])])
       
   direct_commands = ""
   for key in config["commands"]:
     if key.startswith("direct:cmnd:"):
-      direct_commands = "{} `{}` : {}\n".format(direct_commands, 
-                                                key.split(':')[2], 
+      direct_commands = "{} `{}` : {}\n".format(direct_commands, key.split(':')[2], 
                                                 config["commands"]["direct:help:{}".format(key.split(':')[2])])
       
   response = response.format( channel_commands, direct_commands)
@@ -59,18 +57,23 @@ def command_direct_help(config, event):
 
 
 def command_direct_time(config, event):
-  response = "<@{}> Servers datetime is *{}*.".format(event["user"], datetime.datetime.now().replace(microsecond=0).isoformat())
+  response = "<@{}> Servers datetime is *{}*.".format(event["user"], 
+              datetime.datetime.now().replace(microsecond=0).isoformat())
   return response
 
 
 def command_direct_calendar(config, event):
-  response = "<@{}> I assume this year:\n```{}```.".format(event["user"], calendar.TextCalendar().formatyear(date.today().year))
+  response = "<@{}> I assume this year:\n```{}```.".format(event["user"],
+              calendar.TextCalendar().formatyear(date.today().year))
   return response
 
 
 def command_channel_notes(config, event):
-  response = "<@{}> notes recorded till ```{}```:\n".format(event["user"], allNotes())
+  response = "<@{}> notes recorded till {}:```{}```\n".format(event["user"],
+              datetime.datetime.now().replace(microsecond=0).isoformat(),
+              allNotes())
   return response
+
 
 def command_channel_note(config, event):
   matches = re.search(REGEX_CHANCMD, event["text"])
@@ -97,7 +100,3 @@ def hello_world(config, **kwargs):
 
 def config_reload(config, **kwargs):
   return "Config reloaded"
-
-
-#def log(config):
-#  return config["ROOT_LOGGER"].getChild(__name__)
