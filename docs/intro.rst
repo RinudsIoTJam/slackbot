@@ -1,5 +1,6 @@
+************
 Introduction
-------------
+************
 
 This document will help to get the rindus slackbot into place.
 

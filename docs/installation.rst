@@ -1,5 +1,6 @@
+************
 Installation
-------------
+************
 
 Install the rindus slackbot by running:
 
