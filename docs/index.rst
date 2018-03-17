@@ -1,13 +1,34 @@
-=========================================
-rindus IOT Jam - slackbot
-=========================================
+rindus slackbot user documentation
+==================================
 
-.. sectnum::
+.. toctree::
+   :caption: Table of Contents
+   :name: mastertoc
+   :maxdepth: 2
 
-.. contents:: Contents
+   intro
+   features
+   installation
+   usage
+   contribute
+   support
+   license
 
-What is this about?
-~~~~~~~~~~~~~~~~~~~
 
-We are using Slack extensivly for out for our development process
-to be informed about what is going on.
+
+
+Contribute
+----------
+
+- Issue Tracker: github.com/RindusIoTJam/slackbot/issues
+- Source Code: github.com/RindusIoTJam/slackbot
+
+Support
+-------
+
+If you are having issues, please let us know.
+We have a mailing list located at: project@google-groups.com
+
+License
+-------
+This document and the rindus slackbot is licensed under the GNU GPL
