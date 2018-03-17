@@ -1,7 +1,7 @@
 Installation
 ------------
 
-Install the rindus slackbot by running:
+Install the rindus slackbot by running::
 
     git clone https://github.com/RindusIoTJam/slackbot.git
     virtualenv .venv
