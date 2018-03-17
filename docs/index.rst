@@ -1,6 +1,6 @@
-==================================
-rindus slackbot user documentation
-==================================
+=============================
+rindus slackbot documentation
+=============================
 
 .. toctree::
     :caption: Table of Contents
