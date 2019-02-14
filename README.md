@@ -26,13 +26,10 @@ Prerequisites
 
 ```
 git clone https://github.com/RindusIoTJam/slackbot.git
-virtualenv .venv
-source .venv/bin/activate
-pip install slackclient
-pip install tinydb
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
-
-
 
 ## Runtime
 
@@ -47,3 +44,7 @@ file `local_settings.py` in the repository top directory with the content
 
 Get the SLACKBOT_TOKEN from the field 'bot user oauth access token' in the
 Development Workspace. (see mentioned URL above)
+
+## More on _Read the Docs_
+
+https://rindus-slackbot.readthedocs.io/en/latest/index.html
