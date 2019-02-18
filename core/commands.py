@@ -1,91 +1,113 @@
-from persistence import *
+import abc
+import collections
+import importlib
+import logger
+# import tornado.template
 
-import calendar
-import datetime
-import re
-
+# from persistence import *
 from datetime import date
 
-REGEX_CHANCMD = '^(\w+?):(.*)'
+
+class CommandBase(object):
+    __metaclass__ = abc.ABCMeta
+
+    TYPE_DIRECT = 'd:'
+    TYPE_CHANNEL = 'c:'
+
+    _command_type = None
+    _command_word = None
+
+    @abc.abstractmethod
+    def __init__(self, commands_dict, command_type, command_word, level=logger.DEFAULT_LOG_LEVEL):
+        self._logger = logger.getLogger(name="cmd.%s" % self.__class__.__name__.ljust(logger.DEFAULT_NAME_LENGTH,
+                                                                                      ' ')[:logger.DEFAULT_NAME_LENGTH],
+                                        level=level)
+        self._command_type = command_type
+        self._command_word = command_word
+        commands_dict["%s%s" % (command_type, command_word)] = self
+        self._logger.debug("Initialized")
+
+    @abc.abstractmethod
+    def help(self, config, event):
+        """Return a string with a helpful description"""
+        return "No help available."
+
+    @abc.abstractmethod
+    def work(self, config, event):
+        """Return a string with the work output"""
+        return "You should never see this."
+
+    def command(self):
+        return self._command_word
 
 
-def load(config):
-    commands = {
-        "channel:cmnd:note":  command_channel_note,
-        "channel:help:note":  "Take a note",
-        "channel:cmnd:notes": command_channel_notes,
-        "channel:help:notes": "Show all notes",
+class HelpCommand(CommandBase):
 
-        "direct:cmnd:help":   command_direct_help,
-        "direct:help:help":   "This help",
-        "direct:cmnd:time":   command_direct_time,
-        "direct:help:time":   "The servers time",
-        "direct:cmnd:cal":    command_direct_calendar,
-        "direct:help:cal":    "Current calendar"
-        # "direct:cmnd:test":  command_direct_test,
-        # "direct:help:test":  "test"
-    }
-    config["commands"] = commands
-    return config
+    response = None
 
+    def __init__(self, commands):
+        super(HelpCommand, self).__init__(commands, CommandBase.TYPE_DIRECT, "help")
 
-def command_direct_help(config, event):
-    response = "I understand channel and direct commands.\n" \
-                "\n" \
-               "Channel Commands:\n" \
-               "{}" \
-               "\n" \
-               "Direct Commands (speaking with/to bot):\n" \
-               "{}"
+    def help(self, config, event):
+        return "This help."
 
-    channel_commands = ""
-    for key in config["commands"]:
-        if key.startswith("channel:cmnd:"):
-            channel_commands = "{} `{}:` : {}\n".format(channel_commands, key.split(':')[2],
-                                                        config["commands"]["channel:help:{}".format(key.split(':')[2])])
+    def work(self, config, event):
 
-    direct_commands = ""
-    for key in config["commands"]:
-        if key.startswith("direct:cmnd:"):
-            direct_commands = "{} `{}` : {}\n".format(direct_commands, key.split(':')[2],
-                                                      config["commands"]["direct:help:{}".format(key.split(':')[2])])
+        if self.response is None:
+            commands = config.get('commands')
 
-    response = response.format( channel_commands, direct_commands)
-    return response
+            longest_command = 0
+            channel_commands = {}
+            direct_commands = {}
 
+            for k, impl in commands.items():
+                if len(impl.command()) > longest_command:
+                    longest_command = len(impl.command())
 
-def command_direct_time(config, event):
-    response = "<@{}> Servers datetime is *{}*.".format(event["user"],
-                                                        datetime.datetime.now().replace(microsecond=0).isoformat())
-    return response
+                if k.startswith(CommandBase.TYPE_CHANNEL):
+                    channel_commands[k] = impl
+                else:
+                    direct_commands[k] = impl
 
+            response = "I understand channel and direct commands.\n" \
+                       "\n" \
+                       "Channel Commands:\n"
 
-def command_direct_calendar(config, event):
-    response = "<@{}> I assume this year:\n```{}```.".format(event["user"],
-                                                             calendar.TextCalendar().formatyear(date.today().year))
-    return response
+            scc = collections.OrderedDict(sorted(channel_commands.items()))
+            for k, impl in scc.items():
+                if k.startswith(CommandBase.TYPE_CHANNEL):
+                    response = "%s `%s:` - %s\n" % (response,
+                                                    impl.command().ljust(longest_command, ' '),
+                                                    impl.help(config, event))
+
+            response = "%s\n%s" % (response, "Direct Commands (speaking with/to bot):\n")
+
+            sdc = collections.OrderedDict(sorted(direct_commands.items()))
+            for k, impl in sdc.items():
+                if k.startswith(CommandBase.TYPE_DIRECT):
+                    response = "%s `%s` - %s\n" % (response,
+                                                   impl.command().ljust(longest_command, ' '),
+                                                   impl.help(config, event))
+            self.response = response
+            self._logger.debug("Help initially generated.")
+
+        return self.response
 
 
-def command_channel_notes(config, event):
-    response = "<@{}> notes recorded till {}:```{}```\n".format(event["user"],
-                                                                datetime.datetime.now().replace(microsecond=0).isoformat(),
-                                                                allNotes())
-    return response
+def load_core_commands():
+    commands = {}
+    HelpCommand(commands)
+    return commands
 
 
-def command_channel_note(config, event):
-    matches = re.search(REGEX_CHANCMD, event["text"])
+def load_plugin_commands(log, config):
+    commands = {}
+    for plugin in config.get('plugins'):
+        try:
+            class_ = getattr(importlib.import_module("plugins.%s" % plugin), plugin)
+            class_(commands)
+            log.info("Loaded plugin '%s'" % plugin)
+        except ImportError:
+            log.warn("Couldn't load plugin '%s'" % plugin)
 
-    note = {
-        "timestamp": datetime.datetime.now().replace(microsecond=0).isoformat(),
-        "user":      event["user"],
-        "channel":   event["channel"],
-        "note":      matches.group(2).strip()
-    }
-    save(config, note)
-    response = "<@{}> note recorded at {}".format(note["user"],note["timestamp"])
-    return response
-
-
-def config_reload(config, **kwargs):
-    return "Config reloaded"
+    return commands

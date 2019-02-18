@@ -1,6 +1,9 @@
 import logging
 import sys
 
+DEFAULT_NAME_LENGTH = 22
+DEFAULT_LOG_LEVEL = logging.INFO
+
 
 def getLogger(**kwargs):
     if 'name' in kwargs:

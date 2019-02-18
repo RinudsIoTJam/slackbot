@@ -26,4 +26,4 @@ def close_db():
 
 
 def log(config):
-    return config["ROOT_LOGGER"].getChild(__name__)
+    return config.get("ROOT_LOGGER").getChild(__name__)
