@@ -49,7 +49,7 @@ if __name__ == "__main__":
             while True:
                 handler.handle_events(slack_client.rtm_read())
                 time.sleep(RTM_READ_DELAY)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
             config.pop('commands')
             config.pop('plugins')
             config.dump(os.path.join(script_path, 'slack_settings.json'))

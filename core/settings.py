@@ -43,8 +43,12 @@ class Config:
             return None
 
     def dump(self, filename):
-        with open(filename, 'w') as settings_file:
-            json.dump(self._config, settings_file)
+        try:
+            with open(filename, 'w') as settings_file:
+                json.dump(self._config, settings_file)
+        except IOError, e:
+            self._logger.info("Couldn't load '{}'".format(filename))
+            self._logger.debug("{}".format(e))
 
     def get(self, key=None):
         try:
