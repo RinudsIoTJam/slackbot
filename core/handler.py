@@ -2,6 +2,8 @@ import re
 import commands
 import logger
 
+from commands import CommandBase
+
 
 class Handler:
     _config = None
@@ -42,7 +44,7 @@ class Handler:
 
                 user_id, message = self.parse_mention(event)
 
-                if user_id == self._config.get("SLACKBOT_ID") or event["channel"] == self._config.get("BOTCHANNEL_ID"):
+                if user_id == self._config.get("slackbot.id") or event["channel"] == self._config.get("BOTCHANNEL_ID"):
                     # Bot got mentioned directly at message start in some channel or DM with (BotChannel)
                     response = self.handle_direct_command(event, message)
 
@@ -50,16 +52,15 @@ class Handler:
                     # check: A channel command was given
                     command, arguments = self.parse_channel_command(event["text"].lower())
                     if command is not None:
-                        self._logger.debug("handle_channel_command {}".format(event["text"]))
                         response = self.handle_channel_command(event, command)
                     else:
                         self._logger.debug("Ignored this message.")
 
                 if response is not None:
                     # Sends the response back to the channel
-                    self._config.get("SLACK_CLIENT").api_call("chat.postMessage",
-                                                              channel=event["channel"],
-                                                              text=response)
+                    self._config.get("slackbot.instance.client").api_call("chat.postMessage",
+                                                                          channel=event["channel"],
+                                                                          text=response)
 
     @classmethod
     def parse_channel_command(cls, message_text):
@@ -90,7 +91,8 @@ class Handler:
         response = Handler.DEFAULT_RESPONSE
 
         try:
-            response = self._commands["c:%s" % command].work(self._config, event)
+            response = self._commands["%s%s" % (CommandBase.TYPE_CHANNEL,
+                                                command)].work(self._config, event)
         except KeyError:
             pass
 
@@ -105,12 +107,23 @@ class Handler:
         if command is None:
             command = event["text"]
 
-        self._logger.debug("handle_direct_command %s" % command)
+        # Does command is given by BotMaster?
+        if self._config.get('slackbot.botmaster.id') == event["user"]:
+            try:
+                response = self._commands["%s%s" % (CommandBase.TYPE_MASTER,
+                                                    command.split(' ', 1)[0])].work(self._config, event)
+                self._logger.info("handled_master_command %s" % command)
+                return response
+            except KeyError:
+                pass
 
+        # Not BotMaster or master_command not found
         try:
-            response = self._commands["d:%s" % command.split(' ', 1)[0]].work(self._config, event)
+            response = self._commands["%s%s" % (CommandBase.TYPE_DIRECT,
+                                                command.split(' ', 1)[0])].work(self._config, event)
+            return response
         except KeyError:
-            self._logger.warn("Unknown handle_direct_command %s" % command )
+            self._logger.warn("Unknown handle_direct_command %s" % command)
             response = Handler.DEFAULT_RESPONSE
 
         return response

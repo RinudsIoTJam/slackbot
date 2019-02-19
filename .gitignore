@@ -108,3 +108,6 @@ ENV/
 
 # Application specific
 db/db.json
+local_settings.json
+slack_settings.json
+plugins/RegisterBotMasterCommand.json

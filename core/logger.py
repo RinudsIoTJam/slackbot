@@ -2,7 +2,7 @@ import logging
 import sys
 
 DEFAULT_NAME_LENGTH = 22
-DEFAULT_LOG_LEVEL = logging.INFO
+DEFAULT_LOG_LEVEL = logging.DEBUG
 
 
 def getLogger(**kwargs):

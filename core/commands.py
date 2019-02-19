@@ -5,12 +5,12 @@ import logger
 # import tornado.template
 
 # from persistence import *
-from datetime import date
 
 
 class CommandBase(object):
     __metaclass__ = abc.ABCMeta
 
+    TYPE_MASTER = '!:'
     TYPE_DIRECT = 'd:'
     TYPE_CHANNEL = 'c:'
 
@@ -59,6 +59,7 @@ class HelpCommand(CommandBase):
             longest_command = 0
             channel_commands = {}
             direct_commands = {}
+            master_commands = {}
 
             for k, impl in commands.items():
                 if len(impl.command()) > longest_command:
@@ -66,28 +67,41 @@ class HelpCommand(CommandBase):
 
                 if k.startswith(CommandBase.TYPE_CHANNEL):
                     channel_commands[k] = impl
-                else:
+                elif k.startswith(CommandBase.TYPE_DIRECT):
                     direct_commands[k] = impl
+                else:
+                    master_commands[k] = impl
 
-            response = "I understand channel and direct commands.\n" \
-                       "\n" \
-                       "Channel Commands (first word in message, e.g. `foo:`):\n"
+            response = "I understand the following commands.\n\n"
 
-            scc = collections.OrderedDict(sorted(channel_commands.items()))
-            for k, impl in scc.items():
-                if k.startswith(CommandBase.TYPE_CHANNEL):
-                    response = "%s `%s:` - %s\n" % (response,
-                                                    impl.command().ljust(longest_command, ' '),
-                                                    impl.help(config, event))
+            # All channel commands (ordered alphabetically)
+            response = "%s\n%s" % (response, "Channel Commands (first word in message, e.g. `foo:`):\n")
+            ordered = collections.OrderedDict(sorted(channel_commands.items()))
+            for k, impl in ordered.items():
+                response = "%s `%s:` - %s\n" % (response,
+                                                impl.command().ljust(longest_command, ' '),
+                                                impl.help(config, event))
 
+            # All direct commands (ordered alphabetically)
             response = "%s\n%s" % (response, "Direct Commands (speaking with/to bot):\n")
+            ordered = collections.OrderedDict(sorted(direct_commands.items()))
+            for k, impl in ordered.items():
+                response = "%s `%s` - %s\n" % (response,
+                                               impl.command().ljust(longest_command, ' '),
+                                               impl.help(config, event))
 
-            sdc = collections.OrderedDict(sorted(direct_commands.items()))
-            for k, impl in sdc.items():
-                if k.startswith(CommandBase.TYPE_DIRECT):
-                    response = "%s `%s` - %s\n" % (response,
-                                                   impl.command().ljust(longest_command, ' '),
-                                                   impl.help(config, event))
+            try:
+                if config.get('slackbot.botmaster.id') == event["user"]:
+                    # All botmaster commands (ordered alphabetically)
+                    response = "%s\n%s" % (response, "BotMaster Commands (speaking with/to bot):\n")
+                    ordered = collections.OrderedDict(sorted(master_commands.items()))
+                    for k, impl in ordered.items():
+                        response = "%s `%s:` - %s\n" % (response,
+                                                        impl.command().ljust(longest_command, ' '),
+                                                        impl.help(config, event))
+            except KeyError:
+                pass
+
             self.response = response
             self._logger.debug("Help initially generated.")
 
