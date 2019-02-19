@@ -96,9 +96,9 @@ class HelpCommand(CommandBase):
                     response = "%s\n%s" % (response, "BotMaster Commands (speaking with/to bot):\n")
                     ordered = collections.OrderedDict(sorted(master_commands.items()))
                     for k, impl in ordered.items():
-                        response = "%s `%s:` - %s\n" % (response,
-                                                        impl.command().ljust(longest_command, ' '),
-                                                        impl.help(config, event))
+                        response = "%s `%s` - %s\n" % (response,
+                                                       impl.command().ljust(longest_command, ' '),
+                                                       impl.help(config, event))
             except KeyError:
                 pass
 
