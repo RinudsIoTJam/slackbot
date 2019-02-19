@@ -117,11 +117,12 @@ def load_core_commands():
 def load_plugin_commands(log, config):
     commands = {}
     for plugin in config.get('plugins'):
-        try:
-            class_ = getattr(importlib.import_module("plugins.%s" % plugin), plugin)
-            class_(commands)
-            log.info("Loaded plugin '%s'" % plugin)
-        except ImportError:
-            log.warn("Couldn't load plugin '%s'" % plugin)
+        if not plugin.startswith('#'):
+            try:
+                class_ = getattr(importlib.import_module("plugins.%s" % plugin), plugin)
+                class_(commands)
+                log.info("Loaded plugin '%s'" % plugin)
+            except ImportError:
+                log.warn("Couldn't load plugin '%s'" % plugin)
 
     return commands

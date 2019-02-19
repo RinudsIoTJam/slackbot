@@ -1,11 +1,14 @@
 {
   "slackbot.token": "XXXX-325920249586-tkG2oNbZlOMrsjvkeVesRsO4",
   "plugins": [
+    "#-- BotMaster Commands ---------",
+    "QuitBotCommand",
     "RegisterBotMasterCommand",
+    "#-- Direct Commands ------------",
     "CurrentCalendarCommand",
     "CurrentTimeCommand",
     "JarvisInfoCommand",
     "RandomJokeCommand",
-    "QuitBotCommand"
+    "#-- Channel Commands -----------"
   ]
 }
