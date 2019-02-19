@@ -4,6 +4,7 @@
     "#-- BotMaster Commands ---------",
     "QuitBotCommand",
     "RegisterBotMasterCommand",
+    "RegisterBotChannelCommand",
     "#-- Direct Commands ------------",
     "CurrentCalendarCommand",
     "CurrentTimeCommand",

@@ -44,7 +44,8 @@ class Handler:
 
                 user_id, message = self.parse_mention(event)
 
-                if user_id == self._config.get("slackbot.id") or event["channel"] == self._config.get("BOTCHANNEL_ID"):
+                if user_id == self._config.get("slackbot.id") \
+                        or event["channel"] == self._config.get("slackbot.botchannel.id"):
                     # Bot got mentioned directly at message start in some channel or DM with (BotChannel)
                     response = self.handle_direct_command(event, message)
 
