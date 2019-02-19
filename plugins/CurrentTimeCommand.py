@@ -15,8 +15,9 @@ class CurrentTimeCommand(CommandBase):
         return "The servers current time."
 
     def work(self, config, event):
-        response = "<@{}> Servers date/time is *{}*.".format(event["user"],
-                                                             datetime.datetime.now().replace(microsecond=0).isoformat())
+        response = "<@{}> Servers date/time is *{}*."\
+            .format(event["user"],
+                    datetime.datetime.now().replace(microsecond=0).isoformat())
         return response
 
 

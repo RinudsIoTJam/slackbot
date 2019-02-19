@@ -71,7 +71,7 @@ class HelpCommand(CommandBase):
 
             response = "I understand channel and direct commands.\n" \
                        "\n" \
-                       "Channel Commands:\n"
+                       "Channel Commands (first word in message, e.g. `foo:`):\n"
 
             scc = collections.OrderedDict(sorted(channel_commands.items()))
             for k, impl in scc.items():

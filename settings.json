@@ -4,6 +4,8 @@
   "SLACKBOT_TOKEN": "XXXX-325920249586-tkG2oNbZlOMrsjvkeVesRsO4",
   "plugins": [
     "CurrentCalendarCommand",
-    "CurrentTimeCommand"
+    "CurrentTimeCommand",
+    "JarvisInfoCommand",
+    "RandomJokeCommand"
   ]
 }
