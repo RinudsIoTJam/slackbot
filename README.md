@@ -35,15 +35,21 @@ pip install -r requirements.txt
 
 ```
 source slackbot/bin/activate
-SLACKBOT_TOKEN='xXxXxXxXxX' python app.py
+python app.py
 ```
 
-Instead of passing the token as environment variable you can also create a
-file `local_settings.py` in the repository top directory with the content
-`SLACKBOT_TOKEN='xXxXxXxXxX'`.
+YYou set the Slack bot token in the config file `local_settings.py` or
+`local_settings.py` in the repository top directory with the content
 
-Get the SLACKBOT_TOKEN from the field 'bot user oauth access token' in the
-Development Workspace. (see mentioned URL above)
+```
+{
+  "slackbot.token": "xoxo-393952263286-sRsuiTOM645vtkGxoNbZkeVe"
+  ...
+}
+```
+
+Get the `slackbot.token` from the field 'bot user oauth access token' 
+in the Slack Development Workspace. (see mentioned URL above)
 
 ## More on _Read the Docs_
 

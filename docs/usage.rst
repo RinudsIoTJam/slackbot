@@ -5,26 +5,25 @@ Usage
 Production setup
 ================
 
-Starting the slackbot is as easy as
-
-.. code-block:: bash
-
-    SLACK_BOT_TOKEN='xoxo-393952263286-sRsuiTOM645vtkGxoNbZkeVe' python app.py
-
-If you prefer to safe the tocken in the config file
+You set the Slack bot token in the config file
 
 .. code-block:: json
     :caption: settings.json
     :name: settings.json
-    :emphasize-lines: 4
+    :emphasize-lines: 2
     
     {
-      "BOTCHANNEL_ID": "D9JU01RKQ", 
-      "BOTMASTER_SLID": "U8SJUF6KC", 
-      "SLACKBOT_TOKEN": "xoxo-393952263286-sRsuiTOM645vtkGxoNbZkeVe",
-      "plugins": {
-        "bla": "plugins.bla"
-      }
+      "slackbot.token": "XXXX-325920249586-tkG2oNbZlOMrsjvkeVesRsO4",
+      "plugins": [
+        "#-- BotMaster Commands ---------",
+        "BotMasterCommands",
+        "#-- Direct Commands ------------",
+        "BotInfoCommand",
+        "CurrentCalendarCommand",
+        "CurrentTimeCommand",
+        "RandomJokeCommand",
+        "#-- Channel Commands -----------"
+      ]
     }
 
 and simply start the slackbot with
@@ -33,19 +32,35 @@ and simply start the slackbot with
 
     python app.py
 
+The ``help`` command is the only build-in command of the bot.
+
+.. caution::
+   If the BotMasterCommands plugin is enabled, then you should as soon as possible open
+   a direct chat with the bot and enter the following chat messages (replacing ``@bot``
+   with the ``@`` and the bots name:
+
+.. code-block:: bash
+
+    @bot !botchan
+    !register
+
+The first message this DM between you and the bot as a channel where you don't have to
+put ``@bot`` in front of all commands. The second command registers your SlackID as the
+ID that has BotMaster rights.
+
+
 Development setup
 =================
 
-You can setup a ``local_settings.py`` file, that is git ignored and just consists
-of one relevant line staring with ``SLACKBOT_TOKEN``.
+You can create a ``local_settings.json`` file, that is git ignored and just consists
+of one relevant line staring with ``slackbot.token``. It is anyway overwriting every
+setting made in the ``settings.json`` with the settings made there.
 
-.. code-block:: python
-    :caption: local_settings.py
-    :name: local_settings.py
-    :emphasize-lines: 5
+.. code-block:: json
+    :caption: local_settings.json
+    :name: local_settings.json
+    :emphasize-lines: 2
     
-    # My local development setting overwriting
-    # settings.py but never checked in.
-    
-    # The Slack Auth Token
-    SLACKBOT_TOKEN = 'xoxo-393952263286-sRsuiTOM645vtkGxoNbZkeVe'
+    {
+      "slackbot.token": "xoxo-393952263286-sRsuiTOM645vtkGxoNbZkeVe"
+    }

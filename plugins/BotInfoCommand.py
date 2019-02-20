@@ -19,5 +19,3 @@ class BotInfoCommand(CommandBase):
                    "<https://github.com/RindusIoTJam/slackbot|RindusIoTJam/slackbot>."\
             .format(event["user"], config.get("slackbot.id"))
         return response
-
-
