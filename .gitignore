@@ -110,4 +110,4 @@ ENV/
 db/db.json
 local_settings.json
 slack_settings.json
-plugins/RegisterBotMasterCommand.json
+plugins/BotMasterCommands.json

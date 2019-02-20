@@ -49,11 +49,16 @@ if __name__ == "__main__":
             while True:
                 handler.handle_events(slack_client.rtm_read())
                 time.sleep(RTM_READ_DELAY)
-        except (KeyboardInterrupt, SystemExit):
+        except (KeyboardInterrupt, SystemExit), e:
             config.pop('commands')
             config.pop('plugins')
             config.dump(os.path.join(script_path, 'slack_settings.json'))
             # persistence.close_db()
+
+            slack_client.api_call("chat.postMessage",
+                                  channel=config.get('slackbot.botchannel.id'),
+                                  text='Bye bye ... Reason: %s' % str(e))
+
             sys.exit(" ... exiting")
 
     else:
