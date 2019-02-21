@@ -38,8 +38,8 @@ source slackbot/bin/activate
 python app.py
 ```
 
-YYou set the Slack bot token in the config file `local_settings.py` or
-`local_settings.py` in the repository top directory with the content
+Set the Slack bot token in the config file `settings.json` or
+`local_settings.json` in the repository top directory with the content
 
 ```
 {
