@@ -48,7 +48,7 @@ config.set("slackbot.instance.client", slack_client, transient=True)
 log.info("SlackBot connected and running!")
 
 # 1 second delay between reading from RTM
-RTM_READ_DELAY = 1
+RTM_READ_DELAY = 0.25
 
 if args.convo is not None and args.message is not None:
     log.info("Convo:    %s" % args.convo)
