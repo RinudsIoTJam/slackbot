@@ -11,6 +11,7 @@ rindus slackbot documentation
     features
     installation
     usage
+    cli
     plugins
     contribute
     support

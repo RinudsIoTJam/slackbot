@@ -115,3 +115,4 @@ db/db.json
 local_settings.json
 slack_settings.json
 plugins/BotMasterCommands.json
+NOTES.private
