@@ -41,27 +41,31 @@ class Handler:
                 # Message Event
                 self._logger.debug("MESSAGE - channel:'{}' from:'{}' text:'{}'"
                                    .format(event["channel"], event["user"], event["text"]))
+                
+                # Not my own message
+                if event["user"] != self._config.get("slackbot.id"):
 
-                user_id, message = self.parse_mention(event)
+                    user_id, message = self.parse_mention(event)
 
-                if user_id == self._config.get("slackbot.id") \
-                        or event["channel"] == self._config.get("slackbot.botchannel.id"):
-                    # Bot got mentioned directly at message start in some channel or DM with (BotChannel)
-                    response = self.handle_direct_command(event, message)
+                    if user_id == self._config.get("slackbot.id") \
+                            or event["channel"] == self._config.get("slackbot.botchannel.id"):
+                        # Bot got mentioned directly at message start in some channel or DM with (BotChannel)
+                        response = self.handle_direct_command(event, message)
 
-                else:
-                    # check: A channel command was given
-                    command, arguments = self.parse_channel_command(event["text"].lower())
-                    if command is not None:
-                        response = self.handle_channel_command(event, command)
                     else:
-                        self._logger.debug("Ignored this message.")
+                        # check: A channel command was given
+                        command, arguments = self.parse_channel_command(event["text"].lower())
+                        if command is not None:
+                            response = self.handle_channel_command(event, command)
+                        else:
+                            self._logger.debug("Ignored this message.")
 
-                if response is not None:
-                    # Sends the response back to the channel
-                    self._config.get("slackbot.instance.client").api_call("chat.postMessage",
-                                                                          channel=event["channel"],
-                                                                          text=response)
+                    if response is not None:
+                        # Sends the response back to the channel
+                        self._config.get("slackbot.instance.client").api_call("chat.postMessage",
+                                                                            as_user=True,
+                                                                            channel=event["channel"],
+                                                                            text=response)
 
     @classmethod
     def parse_channel_command(cls, message_text):

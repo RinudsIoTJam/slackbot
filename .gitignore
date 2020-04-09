@@ -85,6 +85,7 @@ celerybeat-schedule
 # virtualenv
 .venv
 venv/
+penv/
 ENV/
 
 # Spyder project settings
@@ -105,6 +106,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Visual Studio Code
+.vscode
 
 # Application specific
 db/db.json
