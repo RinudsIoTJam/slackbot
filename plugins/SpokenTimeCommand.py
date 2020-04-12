@@ -10,7 +10,7 @@ class SpokenTimeCommand(CommandBase):
     """
 
     def __init__(self, commands):
-        super(SpokenTimeCommand, self).__init__(commands, CommandBase.TYPE_DIRECT, "speak")
+        super(SpokenTimeCommand, self).__init__(commands, CommandBase.TYPE_CHANNEL, "speak")
 
     def help(self, config, event):
         return "Tell the current date and time in words."
