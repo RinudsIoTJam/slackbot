@@ -10,7 +10,7 @@ class SpokenTimeCommand(CommandBase):
     """
 
     def __init__(self, commands):
-        super(SpokenTimeCommand, self).__init__(commands, CommandBase.TYPE_CHANNEL, "speak")
+        super(SpokenTimeCommand, self).__init__(commands, CommandBase.TYPE_DIRECT, "speak")
 
     def help(self, config, event):
         return "Tell the current date and time in words."
@@ -27,7 +27,7 @@ class SpokenTimeCommand(CommandBase):
         h = datetime.datetime.now().hour
         m = datetime.datetime.now().minute
 
-        if event["text"] == "speak time de":
+        if event["text"].endswith("time de"):
             stunde = numToDeWords(h)
             if m == 0:
                 spokenDateTime = ":alarm_clock: Es ist {} Uhr".format(stunde)
@@ -40,7 +40,7 @@ class SpokenTimeCommand(CommandBase):
                     einheit = "Minuten"
                 spokenDateTime = ":alarm_clock: Es ist {} Uhr und {} {}".format(stunde,minute,einheit)
 
-        elif event["text"] == "speak date de":
+        elif event["text"].endswith("date de"):
             we = datetime.datetime.now().weekday() # Localtime(DE).weekday_name?
             da = datetime.datetime.now().day
             mo = datetime.datetime.now().month # Localtime(DE).monat_name?
