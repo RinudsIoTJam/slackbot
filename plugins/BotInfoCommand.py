@@ -1,5 +1,6 @@
-from core.commands import CommandBase
+# This Python file uses the following encoding: utf-8
 
+from core.commands import CommandBase
 
 class BotInfoCommand(CommandBase):
     """

@@ -1,3 +1,5 @@
+# This Python file uses the following encoding: utf-8
+
 import json
 from tinydb import TinyDB, Query
 

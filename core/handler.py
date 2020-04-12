@@ -1,3 +1,5 @@
+# This Python file uses the following encoding: utf-8
+
 import re
 import commands
 import logger
@@ -39,8 +41,8 @@ class Handler:
             # Check event type
             if event["type"] == "message" and "subtype" not in event:
                 # Message Event
-                self._logger.debug("MESSAGE - channel:'{}' from:'{}' text:'{}'"
-                                   .format(event["channel"], event["user"], event["text"]))
+                self._logger.debug(u"MESSAGE - channel:'{}' from:'{}' text:'{}'"
+                                   .format(event["channel"], event["user"], event["text"], encoding="UTF8"))
                 
                 # Not my own message
                 if event["user"] != self._config.get("slackbot.id"):
